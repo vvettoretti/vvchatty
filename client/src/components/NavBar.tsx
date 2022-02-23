@@ -7,7 +7,7 @@ interface NavBarProps {
 
 const NavBar = (props: NavBarProps) => {
   return (
-    <Flex bg="blackAlpha.500" p="3">
+    <Flex bg="green.500" p="3">
       <Text>VVChatty</Text>
 
       <Flex ml="auto" gap="5">

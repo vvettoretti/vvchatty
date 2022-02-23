@@ -7,74 +7,68 @@ import { peerConfig } from "./config/peerConfig";
 import useWebcam from "./hooks/useWebcam";
 import showVideo from "./utils/showVideo";
 
+const socket = io("localhost:4000");
+let peer: Peer;
+let peerCall: Peer.MediaConnection | undefined;
+
 const App = () => {
   const { webcamMediaStream, webcamVideo } = useWebcam();
   const callerVideo = useRef<HTMLVideoElement>(null);
-  const socket = useRef<Socket>();
-  const peer = useRef<Peer>();
-  const peerCall = useRef<Peer.MediaConnection>();
   const [searching, setSearching] = useState(false);
   const [onlineCount, setOnlineCount] = useState(0);
 
   useEffect(() => {
     // SocketIo setup
-    socket.current = io("localhost:4000");
 
-    socket.current.on("connect", () => {
-      // PeerJS setup
-      peer.current = new Peer(socket.current?.id, peerConfig);
-      peer.current.on("call", (call) => {
+    socket.on("connect", () => {
+      //PeerJS Setup
+      peer = new Peer(socket.id, peerConfig);
+
+      peer.on("call", (call) => {
         call.answer(webcamMediaStream.current);
         call.on("stream", (stream) => {
           showVideo(stream, false, callerVideo);
         });
       });
     });
-
-    socket.current.on("userCount", (data: number) => {
+    socket.on("userCount", (data: number) => {
       setOnlineCount(data);
     });
 
-    socket.current.on(
-      "startChat",
-      (data: { caller: string; accepter: string }) => {
-        setSearching(false);
-        if (!webcamMediaStream.current) return;
-        if (data.caller === socket.current?.id) {
-          console.log("startChat", data, peer.current?.id);
+    socket.on("startChat", (data: { caller: string; accepter: string }) => {
+      setSearching(false);
+      if (!webcamMediaStream.current) return;
+      if (data.caller === socket.id) {
+        console.log("startChat", data, peer.id);
 
-          peerCall.current = peer.current?.call(
-            data.accepter,
-            webcamMediaStream.current
-          );
-          peerCall.current?.on("stream", (stream) => {
-            showVideo(stream, false, callerVideo);
-          });
-        }
+        peerCall = peer.call(data.accepter, webcamMediaStream.current);
+        peerCall.on("stream", (stream) => {
+          showVideo(stream, false, callerVideo);
+        });
       }
-    );
+    });
 
-    socket.current.on("stopChat", () => {
-      peerCall.current?.close();
-      peerCall.current = undefined;
+    socket.on("stopChat", () => {
+      peerCall?.close();
+      peerCall = undefined;
       showVideo(null, false, callerVideo);
     });
   }, []);
 
   const startSearch = () => {
-    if (peerCall.current) {
-      peerCall.current.close();
-      peerCall.current = undefined;
-      socket.current?.emit("stopChat");
+    if (peerCall) {
+      peerCall.close();
+      peerCall = undefined;
+      socket.emit("stopChat");
       showVideo(null, false, callerVideo);
     }
-    socket.current?.emit("startSearch");
+    socket.emit("startSearch");
     setSearching(true);
   };
 
   const stopSearch = () => {
-    socket.current?.emit("stopChat");
-    peerCall.current?.close();
+    socket.emit("stopChat");
+    peerCall?.close();
     showVideo(null, false, callerVideo);
     setSearching(false);
   };
