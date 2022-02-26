@@ -69,9 +69,9 @@ const App = () => {
     });
 
     socket.on("chatMessage", (data) => {
-      console.log(messages);
       setMessages((messages) => [...messages, { text: data, mine: false }]);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const startSearch = () => {
