@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { userMediaConfig } from "../config/userMediaConfig";
 import showVideo from "../utils/showVideo";
 

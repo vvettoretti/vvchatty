@@ -1,25 +1,23 @@
-import { ChevronRightIcon } from "@chakra-ui/icons";
 import {
   Button,
   Flex,
-  IconButton,
   Input,
   InputGroup,
-  InputRightElement,
   SimpleGrid,
   Text,
 } from "@chakra-ui/react";
 import Peer from "peerjs";
-import { KeyboardEventHandler, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import MessageBox from "./components/MessageBox";
 import NavBar from "./components/NavBar";
 import VideoPreview from "./components/VideoPreview";
 import { peerConfig } from "./config/peerConfig";
+import { socketConfig } from "./config/socketConfig";
 import useWebcam from "./hooks/useWebcam";
 import showVideo from "./utils/showVideo";
 
-const socket = io("localhost:4000");
+const socket = io(socketConfig);
 let peer: Peer;
 let peerCall: Peer.MediaConnection | undefined;
 

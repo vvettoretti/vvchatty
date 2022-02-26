@@ -1,7 +1,7 @@
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { __port__, __prod__ } from "./utils/constants";
+import { REDIS_URL, __port__, __prod__ } from "./utils/constants";
 import Redis from "ioredis";
 import { randomUUID } from "crypto";
 import stopChat from "./utils/stopChat";
@@ -12,7 +12,7 @@ const app = express();
 
 const httpServer = createServer(app);
 
-const redis = new Redis();
+const redis = new Redis(REDIS_URL);
 
 // app.use("/peerjs", peerServer);
 const io = new Server(httpServer, {
