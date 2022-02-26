@@ -13,11 +13,14 @@ import MessageBox from "./components/MessageBox";
 import NavBar from "./components/NavBar";
 import VideoPreview from "./components/VideoPreview";
 import { peerConfig } from "./config/peerConfig";
-import { socketConfig } from "./config/socketConfig";
 import useWebcam from "./hooks/useWebcam";
 import showVideo from "./utils/showVideo";
 
-const socket = io(socketConfig);
+const socket = io(
+  process.env.NODE_ENV === "production"
+    ? "api-vvchatty.vvettoretti.dev"
+    : "localhost:4000"
+);
 let peer: Peer;
 let peerCall: Peer.MediaConnection | undefined;
 
