@@ -5,13 +5,12 @@ interface NavBarProps {
   onlineCount: number;
 }
 
-const NavBar = (props: NavBarProps) => {
+const NavBar: React.FC<NavBarProps> = ({ onlineCount }) => {
   return (
-    <Flex bg="green.500" p="3">
-      <Text>VVChatty</Text>
-
-      <Flex ml="auto" gap="5">
-        <Text>{props.onlineCount} online</Text>
+    <Flex bg="green.500" p="3" alignItems="center">
+      <Text fontSize="xl">VVChatty</Text>
+      <Flex ml="auto" gap="5" alignItems="center">
+        <Text>{onlineCount} online</Text>
         <DarkModeSwitch />
       </Flex>
     </Flex>

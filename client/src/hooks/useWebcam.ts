@@ -11,7 +11,7 @@ const useWebcam = () => {
       showVideo(stream, true, webcamVideo);
     });
     return () => {};
-  });
+  }, []);
   return { webcamMediaStream, webcamVideo };
 };
 export default useWebcam;

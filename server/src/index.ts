@@ -1,7 +1,7 @@
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { __port__ } from "./constants";
+import { __port__, __prod__ } from "./utils/constants";
 import Redis from "ioredis";
 import { randomUUID } from "crypto";
 import stopChat from "./utils/stopChat";
@@ -39,18 +39,28 @@ io.on("connection", async (socket) => {
     await redis.srem("searchingUsers", socket.id);
   });
 
-  socket.on("chatMessage", async (message) => {
-    const roomId = await redis.get(socket.id);
-    if (roomId) {
-      io.to(roomId).emit("chatMessage", { message, user: socket.id });
+  socket.on("chatMessage", async (text: string) => {
+    if (text.length < 200) {
+      const roomId = await redis.get(socket.id);
+      if (roomId) {
+        const sockets = await io.in(roomId).fetchSockets();
+        sockets.map((s) => {
+          if (s.id != socket.id) {
+            s.emit("chatMessage", text);
+          }
+        });
+        // io.to(roomId).emit("chatMessage", { message, user: socket.id });
+      }
     }
   });
-  socket.on("typing", async () => {
-    const roomId = await redis.get(socket.id);
-    if (roomId) {
-      io.to(roomId).emit("typing", { user: socket.id });
-    }
-  });
+
+  // I don't want to add typing
+  // socket.on("typing", async () => {
+  //   const roomId = await redis.get(socket.id);
+  //   if (roomId) {
+  //     io.to(roomId).emit("typing", { user: socket.id });
+  //   }
+  // });
   socket.on("stopChat", async () => {
     stopChat(io, socket, redis);
   });
