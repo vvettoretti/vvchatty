@@ -10,6 +10,7 @@ COPY package*.json ./
 COPY yarn.lock ./
 
 RUN yarn
+COPY . .
 RUN yarn build
 # If you are building your code for production
 # RUN npm ci --only=production
@@ -18,6 +19,7 @@ RUN yarn build
 COPY . .
 
 ENV NODE_ENV production
+ENV CORS_ORIGIN "https://vvchatty.vvettoretti.dev"
 
 EXPOSE 4000
 CMD [ "node", "dist/index.js" ] 

@@ -1,23 +1,30 @@
+import cors from "cors";
+import { randomUUID } from "crypto";
 import express from "express";
 import { createServer } from "http";
-import { Server } from "socket.io";
-import { REDIS_URL, __port__, __prod__ } from "./utils/constants";
 import Redis from "ioredis";
-import { randomUUID } from "crypto";
+import { Server } from "socket.io";
+import { __port__ } from "./utils/constants";
 import stopChat from "./utils/stopChat";
+
+console.log(process.env.CORS_ORIGIN, process.env.REDIS_URl); // Debug
 
 const app = express();
 
-// app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+  })
+);
 
 const httpServer = createServer(app);
 
-const redis = new Redis(REDIS_URL);
+const redis = new Redis(process.env.REDIS_URL || "");
 
 // app.use("/peerjs", peerServer);
 const io = new Server(httpServer, {
   cors: {
-    origin: "*",
+    origin: process.env.CORS_ORIGIN,
   },
 });
 
