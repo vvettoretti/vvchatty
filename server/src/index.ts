@@ -7,13 +7,11 @@ import { Server } from "socket.io";
 import { __port__ } from "./utils/constants";
 import stopChat from "./utils/stopChat";
 
-console.log(process.env.CORS_ORIGIN, process.env.REDIS_URl); // Debug
-
 const app = express();
 
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: ["https://vvchatty.vvettoretti.dev", "localhost:3000"],
   })
 );
 
@@ -24,7 +22,7 @@ const redis = new Redis(process.env.REDIS_URL || "");
 // app.use("/peerjs", peerServer);
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CORS_ORIGIN,
+    origin: ["https://vvchatty.vvettoretti.dev", "localhost:3000"],
   },
 });
 
